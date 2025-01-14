@@ -1,0 +1,30 @@
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+
+import static io.restassured.RestAssured.*;
+import static org.hamcrest.Matchers.*;
+
+public class CoinDeskAPITest {
+
+    public static void main(String[] args) {
+        // Set Base URI
+        RestAssured.baseURI = "https://api.coindesk.com/v1/bpi/currentprice.json";
+
+        // Send GET Request and validate the response
+        Response response = given()
+                .when()
+                .get()
+                .then()
+                .statusCode(200) // Verify the response status code is 200
+                .assertThat()
+                .body("bpi.USD", notNullValue()) // Verify USD BPI exists
+                .body("bpi.GBP", notNullValue()) // Verify GBP BPI exists
+                .body("bpi.EUR", notNullValue()) // Verify EUR BPI exists
+                .body("bpi.GBP.description", equalTo("British Pound Sterling")) // Verify GBP description
+                .extract()
+                .response();
+
+        // Print Response
+        System.out.println("Response Body: " + response.asString());
+    }
+}
